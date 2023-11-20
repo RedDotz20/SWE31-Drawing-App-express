@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 
 import middleware from './middleware';
-// import { userRouter } from './router/users.router';
+import { testTableRouter } from './api/testTable/testTable.routes';
 
 export const app: Application = express();
 
@@ -16,10 +16,10 @@ app.use(express.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-// app.use(express.urlencoded({ extended: true }));
 
 //? Server Routes
 // app.use('/api/users', userRouter);
+app.use('/test', testTableRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');

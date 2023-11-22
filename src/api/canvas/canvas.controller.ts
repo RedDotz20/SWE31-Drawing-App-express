@@ -2,9 +2,21 @@ import { Request, Response } from 'express';
 import { db } from '../../config/config';
 
 export const createCanvas = async (req: Request, res: Response) => {
+  const { userId, name, imageData } = req.body;
+
   try {
+    //? Custom logic to generate unique name
+    let newName = name || 'Untitled';
+    let count = 1;
+
+    //? Check if the name already exists
+    while (await db.canvas.findFirst({ where: { userId, name: newName } })) {
+      count++;
+      newName = `${name || 'Untitled'}(${count})`;
+    }
+
     const createCanvas = await db.canvas.create({
-      data: { userId: req.body.userId },
+      data: { userId: userId, name: newName, imageData: imageData || null },
     });
 
     res.status(200).json({
@@ -19,7 +31,10 @@ export const createCanvas = async (req: Request, res: Response) => {
 
 export const loadUserCanvas = async (req: Request, res: Response) => {
   try {
-    const loadCanvas = await db.canvas.findMany();
+    const loadCanvas = await db.canvas.findMany({
+      orderBy: { createdAt: 'desc' },
+      where: { userId: req.body.userId },
+    });
     res.status(200).json({
       message: 'Canvas Loaded Successfully',
       data: loadCanvas,

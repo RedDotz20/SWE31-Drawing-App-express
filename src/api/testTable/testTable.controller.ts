@@ -16,3 +16,16 @@ export const createNewUsername = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+export const loadTestUsers = async (req: Request, res: Response) => {
+  try {
+    const loadUsers = await db.testTable.findMany();
+    res.status(200).json({
+      message: 'TestUsers Loaded Successfully',
+      data: loadUsers,
+    });
+  } catch (error) {
+    console.error('Error loading users: ', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

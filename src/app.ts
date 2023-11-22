@@ -6,6 +6,7 @@ import morgan from 'morgan';
 
 import middleware from './middleware';
 import { testTableRouter } from './api/testTable/testTable.routes';
+import { canvasRouter } from './api/canvas/canvas.routes';
 
 export const app: Application = express();
 
@@ -18,8 +19,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 //? Server Routes
-// app.use('/api/users', userRouter);
 app.use('/test', testTableRouter);
+app.use('/canvas', canvasRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');

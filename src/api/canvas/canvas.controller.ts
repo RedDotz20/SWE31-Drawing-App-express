@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 import { db } from '../../config/config';
 
-export const createCanvas = async (req: Request, res: Response) => {
+export const createCanvas = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { userId, name, imageData } = req.body;
 
   try {
@@ -29,11 +32,43 @@ export const createCanvas = async (req: Request, res: Response) => {
   }
 };
 
-export const loadUserCanvas = async (req: Request, res: Response) => {
+export const updateCanvas = async (req: Request, res: Response) => {
+  try {
+    const { id, imageData } = req.body;
+
+    if (!id || !imageData) {
+      return res
+        .status(400)
+        .json({ error: 'Canvas ID and imageData are required.' });
+    }
+
+    await db.canvas.update({
+      where: { id: id },
+      data: { imageData: imageData },
+    });
+
+    res.status(204).json({ message: 'Canvas updated successfully.' });
+  } catch (error) {
+    console.error('Error updating canvas:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+export const loadUserCanvas = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const loadCanvas = await db.canvas.findMany({
+      select: {
+        id: true,
+        userId: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+      },
       orderBy: { createdAt: 'desc' },
-      where: { userId: req.body.userId },
+      where: { userId: req.query.userId as string },
     });
     res.status(200).json({
       message: 'Canvas Loaded Successfully',
